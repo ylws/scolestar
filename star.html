@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style type="text/css">
+		.stars{
+			border:1px solid black;
+			background: url(starbg.png) 0px 0 no-repeat;
+			float: left;
+			height: 14px;
+			margin: 500px 300px;
+			position: relative;
+			width: 90px;
+		}
+		.star{
+			background: url(star.png) 0px 0 no-repeat;
+			height: 14px;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 0px;
+			z-index: 1;
+		}
+		.scole{
+			border:1px solid red;
+			height: 14px;
+			right: -22px;
+			position: absolute;
+			top: 0;
+			width: 20px;
+			z-index: 1;
+		}
+	</style>
+	<body>
+		<div class="stars">
+			<div class="star"></div>
+		</div>
+		<div class="scole"></div>
+		<script src="jquery-1.9.1.js" type="text/javascript" charset="utf-8"></script>
+		<script src="global_plugin_scole_2.0.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+		$().shineonScole({
+			"classid":".stars",//评分的外围样式表
+		    "star":".star",//内部显示样式表
+		    "wid":90,//总长度
+		    "starwid":15,//每颗星的长度
+		    "starnum":5,//几颗星
+		    "jj":3,//星间距
+		    "scolerate":20//得分率，不能为0，默认为20，百分制
+		})
+		</script>
+	</body>
+</html>
