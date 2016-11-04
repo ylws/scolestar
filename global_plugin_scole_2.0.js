@@ -20,7 +20,10 @@ $.fn.shineonScole = function(options,num,fn)
 		"scolerate":20,//得分率，不能为0
 		"scolestarflag":"half",//半颗星标识half/整颗星all/自由星auto
 		"scoletxt":[],//得分显示文本
-		"scoleaddtxt":""//纯数字得分后缀
+		"scoleaddtxt":"",//纯数字得分后缀
+		"scolePartTxt":false,//得分后缀文本分开
+		"classidBorderRadius":0,//背景图圆角设置
+		"disabled":false,//是否禁用
 	},
 	settings  = $.extend({},defaults,options),
 	setcid = settings['classid'],
@@ -29,7 +32,12 @@ $.fn.shineonScole = function(options,num,fn)
 	settxt=settings['scoletxt'],
 	setstarnum=settings['starnum'],
 	setatxt=settings['scoleaddtxt'],
+	setparttxt = settings['scolePartTxt'],
 	txtavarage=(setstarnum*settings['scolerate']/settxt.length).toFixed(1),
+	totalWid = settings['wid'],
+	totalScole = setstarnum*settings['scolerate'],
+	borderRadius = settings['classidBorderRadius'],
+	disabled = settings['disabled'],
 	startind;
 	if(num>=0)
 	{
@@ -45,14 +53,25 @@ $.fn.shineonScole = function(options,num,fn)
 		}
 		starind=$(setcid);
 	}
+	if(setstarflag == "auto"){
+		$(setcid).width(totalWid+1);
+	}
 	starind.mouseover(function(){
 		starind=$(setcid).eq($(this).attr("starnum"));
 	});
+	if(disabled){
+		return false;
+	}
 	starind.mousedown(function(e){	
 		starflag=true;
+		
 		startleft=starind.offset()['left'];	
 		starttop=starind.offset()['top'];
-		count=(e.pageX-startleft)/setwidall;
+		if(setstarflag == "auto"){
+			count=(e.pageX-startleft)/((settings['wid'])/setstarnum);
+		}else{
+			count=(e.pageX-startleft)/setwidall;
+		}
 		if(setstarflag=="half")
 		{
 			var countparse=parseInt(count.toFixed(1).toString().split(".")[1]);
@@ -68,13 +87,26 @@ $.fn.shineonScole = function(options,num,fn)
 			var realscole=count*settings['scolerate'];
 			if(settxt.length==0)
 			{
-				starind.next().text(realscole+""+setatxt);
+				if(setparttxt){
+					starind.next().text(realscole);
+					starind.next().next().text(setatxt);
+				}else{
+					starind.next().text(realscole+""+setatxt);
+				}
+				
 			}
 			else
 			{
 				var arrind=parseInt(realscole/txtavarage);
-				starind.next().text(settxt[arrind]+""+setatxt);
+				if(setparttxt){
+					starind.next().text(settxt[arrind]);
+					starind.next().next().text(setatxt);
+				}else{
+					starind.next().text(settxt[arrind]+""+setatxt);
+				}
+				
 			}
+			starind.find(settings['star']).attr("star",count);
 		}
 		else if(setstarflag=="all")
 		{
@@ -83,20 +115,41 @@ $.fn.shineonScole = function(options,num,fn)
 			var realscole=count*settings['scolerate'];
 			if(settxt.length==0)
 			{
-				starind.next().text(realscole+""+setatxt);
+				if(setparttxt){
+					starind.next().text(realscole);
+					starind.next().next().text(setatxt);
+				}else{
+					starind.next().text(realscole+""+setatxt);
+				}
 			}
 			else
 			{
-				starind.next().text(settxt[count-1]+""+setatxt);
+				if(setparttxt){
+					starind.next().text(settxt[count-1]);
+					starind.next().next().text(setatxt);
+				}else{
+					starind.next().text(settxt[count-1]+""+setatxt);
+				}
+				
 			}
+			starind.find(settings['star']).attr("star",count);
 		}
 		else
 		{
 			var realscole=count*settings['scolerate'];
+			if(realscole>totalScole){
+				realscole = totalScole;
+			}
 			starind.find(settings['star']).width(count*setwidall);
 			if(settxt.length==0)
 			{
-				starind.next().text(parseInt(realscole)+""+setatxt);
+				if(setparttxt){
+					starind.next().text(parseFloat(realscole).toFixed(1));
+					starind.next().next().text(setatxt);
+				}else{
+					starind.next().text(parseFloat(realscole).toFixed(1)+""+setatxt);
+				}
+				
 			}
 			else
 			{
@@ -105,17 +158,37 @@ $.fn.shineonScole = function(options,num,fn)
 				{
 					arrind=settxt.length-1;
 				}
-				starind.next().text(settxt[arrind]+""+setatxt);
+				if(setparttxt){
+					starind.next().text(settxt[arrind]);
+					starind.next().next().text(setatxt);
+				}else{
+					starind.next().text(settxt[arrind]+""+setatxt);
+				}
+				
 			}
+			starind.find(settings['star']).attr("star",count);
 		}
+		
 	});
 	starind.mousemove(function(e){
+
 		if(starflag)
 		{
-			if(e.pageX<=(startleft+settings['wid'])&&e.pageY>=starttop&&e.pageY<=starttop+starind.height())
+			var XScope ;
+			if(setstarflag == "auto"){
+				XScope = e.pageX<=(startleft+settings['wid']+1)
+			}else{
+				XScope = e.pageX<=(startleft+settings['wid'])
+			}
+			if(XScope&&e.pageY>=starttop&&e.pageY<=starttop+starind.height())
 			{
 				var left=e.pageX-startleft;
 				starind.find(settings['star']).width(left);
+				if(left <= 0&&borderRadius){
+					starind.css("border-radius","0 "+borderRadius+"px "+borderRadius+"px 0");
+				}else{
+					starind.css("border-radius",borderRadius+"px ");
+				}
 				if(setstarflag=="half")
 				{
 					count=(e.pageX-startleft)/setwidall;
@@ -131,7 +204,13 @@ $.fn.shineonScole = function(options,num,fn)
 					var realscole=count*settings['scolerate'];
 					if(settxt.length==0)
 					{
-						starind.next().text(realscole+""+setatxt);
+						if(setparttxt){
+							starind.next().text(realscole);
+							starind.next().next().text(setatxt);
+						}else{
+							starind.next().text(realscole+""+setatxt);
+						}
+						
 					}
 					else
 					{
@@ -140,8 +219,15 @@ $.fn.shineonScole = function(options,num,fn)
 						{
 							arrind=settxt.length-1
 						}
-						starind.next().text(settxt[arrind]+""+setatxt);
+						if(setparttxt){
+							starind.next().text(settxt[arrind]);
+							starind.next().text(setatxt);
+						}else{
+							starind.next().text(settxt[arrind]+""+setatxt);
+						}
+						
 					}
+					starind.find(settings['star']).attr("star",count);
 				}
 				else if(setstarflag=="all")
 				{
@@ -149,36 +235,66 @@ $.fn.shineonScole = function(options,num,fn)
 					var realscole=count*settings['scolerate'];
 					if(settxt.length==0)
 					{
-						starind.next().text(realscole+""+setatxt);
+						if(setparttxt){
+							starind.next().text(realscole);
+							starind.next().next().text(setatxt);
+						}else{
+							starind.next().text(realscole+""+setatxt);
+						}
+						
 						starind.find(settings['star']).width(count*(settings['starwid'])+parseInt(count)*settings['jj']);
 					}
 					else
 					{
-						starind.next().text(settxt[count-1]+""+setatxt);
+						if(setparttxt){
+							starind.next().text(settxt[count-1]);
+							starind.next().text(setatxt);
+						}else{
+							starind.next().text(settxt[count-1]+""+setatxt);
+						}
+						
 						starind.find(settings['star']).width(count*(settings['starwid'])+parseInt(count)*settings['jj']);
 					}
+					starind.find(settings['star']).attr("star",count);
 				}
 				else
 				{
-					count=(e.pageX-startleft-settings['jj']/2)/((settings['wid']-settings['jj']/2)/setstarnum);
+					count=(e.pageX-startleft)/((settings['wid'])/setstarnum);
 					if(count<0)
 					{
 						count=0;
 					}
 					var realscole=count*settings['scolerate'];
+					if(realscole>totalScole){
+						realscole = totalScole;
+					}
 					if(settxt.length==0)
 					{
-						starind.next().text(Math.round(realscole)+""+setatxt);
+						if(setparttxt){
+							starind.next().text(parseFloat(realscole).toFixed(1));
+							starind.next().next().text(setatxt);
+						}else{
+							starind.next().text(parseFloat(realscole).toFixed(1)+""+setatxt);
+						}
+						
 					}
 					else
 					{
-						var arrind=parseInt(realscole/txtavarage);
+						var arrind=parseFloat(realscole/txtavarage).toFixed(1);
 						if(arrind>=settxt.length)
 						{
 							arrind=settxt.length-1;
 						}
-						starind.next().text(settxt[arrind]+""+setatxt);
+						if(setparttxt){
+							
+							starind.next().text(settxt[arrind]);
+							starind.next().next().text(setatxt);
+						}else{
+							starind.next().text(settxt[arrind]+""+setatxt);
+						}
+						
 					}
+					starind.find(settings['star']).attr("star",count);
 				}
 				
 			}
@@ -188,9 +304,11 @@ $.fn.shineonScole = function(options,num,fn)
 			}
 			
 		}
+		starind.find(settings['star']).attr("scole",realscole);
 	});
 	starind.mouseup(function(e){
 		starflag=false;
+		
 		if(setstarflag=="half"&&count!=undefined)
 		{
 			var countparse=parseInt(count.toFixed(1).toString().split(".")[1]);
@@ -214,6 +332,7 @@ $.fn.shineonScole = function(options,num,fn)
 	});
 	$(document).mouseup(function(){
 		starflag=false;
+		
 	});
 	document.addEventListener("dragstart",function(e){
 		e.preventDefault();
