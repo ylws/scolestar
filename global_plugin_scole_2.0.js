@@ -24,6 +24,7 @@ $.fn.shineonScole = function(options,num,fn)
 		"scolePartTxt":false,//得分后缀文本分开
 		"classidBorderRadius":0,//背景图圆角设置
 		"disabled":false,//是否禁用
+		"fnMoveFlag":false,//fn调用位置，true为onmousemove,false为onmouseup
 	},
 	settings  = $.extend({},defaults,options),
 	setcid = settings['classid'],
@@ -38,6 +39,7 @@ $.fn.shineonScole = function(options,num,fn)
 	totalScole = setstarnum*settings['scolerate'],
 	borderRadius = settings['classidBorderRadius'],
 	disabled = settings['disabled'],
+	fnMoveFlag = settings['fnMoveFlag'],
 	startind;
 	if(num>=0)
 	{
@@ -56,21 +58,32 @@ $.fn.shineonScole = function(options,num,fn)
 	if(setstarflag == "auto"){
 		$(setcid).width(totalWid+1);
 	}
-	starind.mouseover(function(){
+	starind.on("mouseover touchstart",function(){
 		starind=$(setcid).eq($(this).attr("starnum"));
 	});
 	if(disabled){
 		return false;
 	}
-	starind.mousedown(function(e){	
+	starind.on("mousedown touchstart",function(e){	
+		e=window.event||e;
 		starflag=true;
-		
+		var pageX;
+       	var pageY;
+		if (navigator.userAgent.match(/(iPhone|Android|iPad)/i)) {
+            if(e.targetTouches){
+	           	pageX = e.targetTouches[0].pageX;
+	            pageY = e.targetTouches[0].pageY;
+           }
+        } else {
+            pageX = e.pageX;
+            pageY = e.pageY;
+        }
 		startleft=starind.offset()['left'];	
 		starttop=starind.offset()['top'];
 		if(setstarflag == "auto"){
-			count=(e.pageX-startleft)/((settings['wid'])/setstarnum);
+			count=(pageX-startleft)/((settings['wid'])/setstarnum);
 		}else{
-			count=(e.pageX-startleft)/setwidall;
+			count=(pageX-startleft)/setwidall;
 		}
 		if(setstarflag=="half")
 		{
@@ -140,7 +153,8 @@ $.fn.shineonScole = function(options,num,fn)
 			if(realscole>totalScole){
 				realscole = totalScole;
 			}
-			starind.find(settings['star']).width(count*setwidall);
+			var parentwid = starind.find(settings['star']).parent().width();
+			starind.find(settings['star']).width(count*setwidall>parentwid?parentwid:count*setwidall);
 			if(settxt.length==0)
 			{
 				if(setparttxt){
@@ -167,22 +181,35 @@ $.fn.shineonScole = function(options,num,fn)
 				
 			}
 			starind.find(settings['star']).attr("star",count);
+			starind.find(settings['star']).attr("scole",realscole);
 		}
 		
 	});
-	starind.mousemove(function(e){
-
+	starind.on("mousemove touchmove",function(e){
+		e=window.event||e;
 		if(starflag)
 		{
+			var pageX;
+       		var pageY;
+			 if (navigator.userAgent.match(/(iPhone|Android|iPad)/i)) {
+	            if(e.targetTouches){
+		           	pageX = e.targetTouches[0].pageX;
+		            pageY = e.targetTouches[0].pageY;
+	           }
+	        } else {
+	            pageX = e.pageX;
+	            pageY = e.pageY;
+	        }
+	        
 			var XScope ;
 			if(setstarflag == "auto"){
-				XScope = e.pageX<=(startleft+settings['wid']+1)
+				XScope = pageX<=(startleft+settings['wid']+1)
 			}else{
-				XScope = e.pageX<=(startleft+settings['wid'])
+				XScope = pageX<=(startleft+settings['wid'])
 			}
-			if(XScope&&e.pageY>=starttop&&e.pageY<=starttop+starind.height())
+			if(XScope&&pageY>=starttop&&pageY<=starttop+starind.height())
 			{
-				var left=e.pageX-startleft;
+				var left=pageX-startleft;
 				starind.find(settings['star']).width(left);
 				if(left <= 0&&borderRadius){
 					starind.css("border-radius","0 "+borderRadius+"px "+borderRadius+"px 0");
@@ -191,7 +218,7 @@ $.fn.shineonScole = function(options,num,fn)
 				}
 				if(setstarflag=="half")
 				{
-					count=(e.pageX-startleft)/setwidall;
+					count=(pageX-startleft)/setwidall;
 					var countparse=parseInt(count.toFixed(1).toString().split(".")[1]);
 					if(countparse>5||countparse==0)
 					{
@@ -231,7 +258,7 @@ $.fn.shineonScole = function(options,num,fn)
 				}
 				else if(setstarflag=="all")
 				{
-					count=Math.ceil((e.pageX-startleft)/setwidall);
+					count=Math.ceil((pageX-startleft)/setwidall);
 					var realscole=count*settings['scolerate'];
 					if(settxt.length==0)
 					{
@@ -259,7 +286,7 @@ $.fn.shineonScole = function(options,num,fn)
 				}
 				else
 				{
-					count=(e.pageX-startleft)/((settings['wid'])/setstarnum);
+					count=(pageX-startleft)/((settings['wid'])/setstarnum);
 					if(count<0)
 					{
 						count=0;
@@ -296,7 +323,10 @@ $.fn.shineonScole = function(options,num,fn)
 					}
 					starind.find(settings['star']).attr("star",count);
 				}
-				
+				if(typeof fn==="function"&&fnMoveFlag)
+				{
+					fn(realscole);
+				}	
 			}
 			else
 			{
@@ -306,7 +336,7 @@ $.fn.shineonScole = function(options,num,fn)
 		}
 		starind.find(settings['star']).attr("scole",realscole);
 	});
-	starind.mouseup(function(e){
+	starind.on("mouseup  touchend",function(e){
 		starflag=false;
 		
 		if(setstarflag=="half"&&count!=undefined)
@@ -327,10 +357,10 @@ $.fn.shineonScole = function(options,num,fn)
 		}
 		if(typeof fn==="function")
 		{
-			fn();
+			fn(starind.find(settings['star']).attr("scole"));
 		}	
 	});
-	$(document).mouseup(function(){
+	$(document).on("mouseup",function(){
 		starflag=false;
 		
 	});
