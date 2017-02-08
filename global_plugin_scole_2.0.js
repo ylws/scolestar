@@ -25,6 +25,7 @@ $.fn.shineonScole = function(options,num,fn)
 		"classidBorderRadius":0,//背景图圆角设置
 		"disabled":false,//是否禁用
 		"fnMoveFlag":false,//fn调用位置，true为onmousemove,false为onmouseup
+		"scolenexttype":false//input
 	},
 	settings  = $.extend({},defaults,options),
 	setcid = settings['classid'],
@@ -40,6 +41,7 @@ $.fn.shineonScole = function(options,num,fn)
 	borderRadius = settings['classidBorderRadius'],
 	disabled = settings['disabled'],
 	fnMoveFlag = settings['fnMoveFlag'],
+	scolenexttype = settings['scolenexttype'],
 	startind;
 	if(num>=0)
 	{
@@ -64,6 +66,7 @@ $.fn.shineonScole = function(options,num,fn)
 	if(disabled){
 		return false;
 	}
+	var scrolltopval =0;
 	starind.on("mousedown touchstart",function(e){	
 		e=window.event||e;
 		starflag=true;
@@ -75,8 +78,8 @@ $.fn.shineonScole = function(options,num,fn)
 	            pageY = e.targetTouches[0].pageY;
            }
         } else {
-            pageX = e.pageX;
-            pageY = e.pageY;
+             pageX = (e.pageX||e.clientX);
+	         pageY = (e.pageY||e.clientY);
         }
 		startleft=starind.offset()['left'];	
 		starttop=starind.offset()['top'];
@@ -101,10 +104,18 @@ $.fn.shineonScole = function(options,num,fn)
 			if(settxt.length==0)
 			{
 				if(setparttxt){
-					starind.next().text(realscole);
+					if(scolenexttype == "input"){
+						starind.next().val(realscole);
+					}else{
+						starind.next().text(realscole);
+					}
 					starind.next().next().text(setatxt);
 				}else{
-					starind.next().text(realscole+""+setatxt);
+					if(scolenexttype == "input"){
+						starind.next().val(realscole+""+setatxt);
+					}else{
+						starind.next().text(realscole+""+setatxt);
+					}
 				}
 				
 			}
@@ -112,10 +123,20 @@ $.fn.shineonScole = function(options,num,fn)
 			{
 				var arrind=parseInt(realscole/txtavarage);
 				if(setparttxt){
-					starind.next().text(settxt[arrind]);
+					if(scolenexttype == "input"){
+						starind.next().val(settxt[arrind]);
+					}else{
+						starind.next().text(settxt[arrind]);
+					}
+					
 					starind.next().next().text(setatxt);
 				}else{
-					starind.next().text(settxt[arrind]+""+setatxt);
+					if(scolenexttype == "input"){
+						starind.next().val(settxt[arrind]+""+setatxt);
+					}else{
+						starind.next().text(settxt[arrind]+""+setatxt);
+					}
+					
 				}
 				
 			}
@@ -129,19 +150,39 @@ $.fn.shineonScole = function(options,num,fn)
 			if(settxt.length==0)
 			{
 				if(setparttxt){
-					starind.next().text(realscole);
+					if(scolenexttype == "input"){
+						starind.next().val(realscole);
+					}else{
+						starind.next().text(realscole);
+					}
+					
 					starind.next().next().text(setatxt);
 				}else{
-					starind.next().text(realscole+""+setatxt);
+					if(scolenexttype == "input"){
+						starind.next().val(realscole+""+setatxt);
+					}else{
+						starind.next().text(realscole+""+setatxt);
+					}
+					
 				}
 			}
 			else
 			{
 				if(setparttxt){
-					starind.next().text(settxt[count-1]);
+					if(scolenexttype == "input"){
+						starind.next().val(settxt[count-1]);
+					}else{
+						starind.next().text(settxt[count-1]);
+					}
+					
 					starind.next().next().text(setatxt);
 				}else{
-					starind.next().text(settxt[count-1]+""+setatxt);
+					if(scolenexttype == "input"){
+						starind.next().val(settxt[count-1]+""+setatxt);
+					}else{
+						starind.next().text(settxt[count-1]+""+setatxt);
+					}
+					
 				}
 				
 			}
@@ -158,10 +199,20 @@ $.fn.shineonScole = function(options,num,fn)
 			if(settxt.length==0)
 			{
 				if(setparttxt){
-					starind.next().text(parseFloat(realscole).toFixed(1));
+					if(scolenexttype == "input"){
+						starind.next().val(parseFloat(realscole).toFixed(1));
+					}else{
+						starind.next().text(parseFloat(realscole).toFixed(1));
+					}
+					
 					starind.next().next().text(setatxt);
 				}else{
-					starind.next().text(parseFloat(realscole).toFixed(1)+""+setatxt);
+					if(scolenexttype == "input"){
+						starind.next().val(parseFloat(realscole).toFixed(1)+""+setatxt);
+					}else{
+						starind.next().text(parseFloat(realscole).toFixed(1)+""+setatxt);
+					}
+					
 				}
 				
 			}
@@ -173,18 +224,28 @@ $.fn.shineonScole = function(options,num,fn)
 					arrind=settxt.length-1;
 				}
 				if(setparttxt){
-					starind.next().text(settxt[arrind]);
+					if(scolenexttype == "input"){
+						starind.next().val(settxt[arrind]);
+					}else{
+						starind.next().text(settxt[arrind]);
+					}
+					
 					starind.next().next().text(setatxt);
 				}else{
-					starind.next().text(settxt[arrind]+""+setatxt);
+					if(scolenexttype == "input"){
+						starind.next().val(settxt[arrind]+""+setatxt);
+					}else{
+						starind.next().text(settxt[arrind]+""+setatxt);
+					}
+					
 				}
 				
 			}
 			starind.find(settings['star']).attr("star",count);
 			starind.find(settings['star']).attr("scole",realscole);
 		}
-		
 	});
+	
 	starind.on("mousemove touchmove",function(e){
 		e=window.event||e;
 		if(starflag)
@@ -197,8 +258,8 @@ $.fn.shineonScole = function(options,num,fn)
 		            pageY = e.targetTouches[0].pageY;
 	           }
 	        } else {
-	            pageX = e.pageX;
-	            pageY = e.pageY;
+	            pageX = (e.pageX||e.clientX);
+	            pageY = (e.pageY||e.clientY);
 	        }
 	        
 			var XScope ;
@@ -206,6 +267,10 @@ $.fn.shineonScole = function(options,num,fn)
 				XScope = pageX<=(startleft+settings['wid']+1)
 			}else{
 				XScope = pageX<=(startleft+settings['wid'])
+			}
+			scrolltopval = document.body.scrollTop|| document.documentElement.scrollTop
+			if(!e.pageX){//ie8 e.clientY不包含滚动条距离
+				pageY = pageY+scrolltopval;
 			}
 			if(XScope&&pageY>=starttop&&pageY<=starttop+starind.height())
 			{
@@ -232,10 +297,20 @@ $.fn.shineonScole = function(options,num,fn)
 					if(settxt.length==0)
 					{
 						if(setparttxt){
-							starind.next().text(realscole);
+							if(scolenexttype == "input"){
+								starind.next().val(realscole);
+							}else{
+								starind.next().text(realscole);
+							}
+							
 							starind.next().next().text(setatxt);
 						}else{
-							starind.next().text(realscole+""+setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(realscole+""+setatxt);
+							}else{
+								starind.next().text(realscole+""+setatxt);
+							}
+							
 						}
 						
 					}
@@ -247,10 +322,20 @@ $.fn.shineonScole = function(options,num,fn)
 							arrind=settxt.length-1
 						}
 						if(setparttxt){
-							starind.next().text(settxt[arrind]);
+							if(scolenexttype == "input"){
+								starind.next().val(settxt[arrind]);
+							}else{
+								starind.next().text(settxt[arrind]);
+							}
+							
 							starind.next().text(setatxt);
 						}else{
-							starind.next().text(settxt[arrind]+""+setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(settxt[arrind]+""+setatxt);
+							}else{
+								starind.next().text(settxt[arrind]+""+setatxt);
+							}
+							
 						}
 						
 					}
@@ -263,10 +348,20 @@ $.fn.shineonScole = function(options,num,fn)
 					if(settxt.length==0)
 					{
 						if(setparttxt){
-							starind.next().text(realscole);
-							starind.next().next().text(setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(realscole);
+							}else{
+								starind.next().text(realscole);
+							}
+							
+//							starind.next().next().text(setatxt);
 						}else{
-							starind.next().text(realscole+""+setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(realscole+""+setatxt);
+							}else{
+								starind.next().text(realscole+""+setatxt);
+							}
+							
 						}
 						
 						starind.find(settings['star']).width(count*(settings['starwid'])+parseInt(count)*settings['jj']);
@@ -274,10 +369,20 @@ $.fn.shineonScole = function(options,num,fn)
 					else
 					{
 						if(setparttxt){
-							starind.next().text(settxt[count-1]);
-							starind.next().text(setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(settxt[count-1]);
+							}else{
+								starind.next().text(settxt[count-1]);
+							}
+							
+//							starind.next().text(setatxt);
 						}else{
-							starind.next().text(settxt[count-1]+""+setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(settxt[count-1]+""+setatxt);
+							}else{
+								starind.next().text(settxt[count-1]+""+setatxt);
+							}
+							
 						}
 						
 						starind.find(settings['star']).width(count*(settings['starwid'])+parseInt(count)*settings['jj']);
@@ -298,10 +403,20 @@ $.fn.shineonScole = function(options,num,fn)
 					if(settxt.length==0)
 					{
 						if(setparttxt){
-							starind.next().text(parseFloat(realscole).toFixed(1));
-							starind.next().next().text(setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(parseFloat(realscole).toFixed(1));
+							}else{
+								starind.next().text(parseFloat(realscole).toFixed(1));
+							}
+							
+//							starind.next().next().text(setatxt);
 						}else{
-							starind.next().text(parseFloat(realscole).toFixed(1)+""+setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(parseFloat(realscole).toFixed(1)+""+setatxt);
+							}else{
+								starind.next().text(parseFloat(realscole).toFixed(1)+""+setatxt);
+							}
+							
 						}
 						
 					}
@@ -313,11 +428,20 @@ $.fn.shineonScole = function(options,num,fn)
 							arrind=settxt.length-1;
 						}
 						if(setparttxt){
+							if(scolenexttype == "input"){
+								starind.next().val(settxt[arrind]);
+							}else{
+								starind.next().text(settxt[arrind]);
+							}
 							
-							starind.next().text(settxt[arrind]);
-							starind.next().next().text(setatxt);
+//							starind.next().next().text(setatxt);
 						}else{
-							starind.next().text(settxt[arrind]+""+setatxt);
+							if(scolenexttype == "input"){
+								starind.next().val(settxt[arrind]+""+setatxt);
+							}else{
+								starind.next().text(settxt[arrind]+""+setatxt);
+							}
+							
 						}
 						
 					}
